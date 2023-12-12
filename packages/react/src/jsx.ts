@@ -5,11 +5,11 @@ import {
 	Key,
 	Ref,
 	Props,
-	ReactElement
-	// ElementType
+	ReactElement,
+	ElementType
 } from 'shared/ReactType'
 
-export const ReactElement = function (
+const ReactElement = function (
 	type: Type,
 	key: Key,
 	ref: Ref,
@@ -26,10 +26,37 @@ export const ReactElement = function (
 	return element
 }
 
-// export const jsx = (
-// 	type: ElementType,
-// 	config: any,
-// 	...maybeChildren: any[]
-// ) {
+export const jsx = (
+	type: ElementType,
+	config: any,
+	...maybeChildren: any[]
+) => {
+	let key: Key = null
+	let ref: Ref = null
+	const props: Props = {}
 
-// }
+	for (const prop in config) {
+		const val = config[prop]
+		if (prop === 'key' && val != undefined) {
+			key = '' + val
+			continue
+		}
+
+		if (prop === 'ref' && val != undefined) {
+			ref = val
+			continue
+		}
+
+		if (Object.prototype.hasOwnProperty.call(config, prop)) {
+			props[prop] = val
+		}
+	}
+
+	const maybeChildrenLength = maybeChildren.length
+	if (maybeChildrenLength) {
+		props.children = maybeChildrenLength === 1 ? [maybeChildren] : maybeChildren
+	}
+	return ReactElement(type, key, ref, props)
+}
+
+export const jsxDev = jsx
